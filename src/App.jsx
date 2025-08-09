@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import Search from "./components/search"
+import Spinner from "./components/Spinner"
+import MovieCard from "./components/MovieCard"
 
 const API_BASE_URL = "https://api.themoviedb.org/3"
 
@@ -25,15 +27,15 @@ const App = () => {
 
 		try {
 			const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`
-			const responce = await fetch(endpoint, API_OPTIONS)
+			const response = await fetch(endpoint, API_OPTIONS)
 
-			if (!responce.ok) {
+			if (!response.ok) {
 				throw new Error("Failed to fetch movies!")
 			}
 
-			const data = await responce.json()
+			const data = await response.json()
 
-			if (data.Responce === "False") {
+			if (data.Response === "False") {
 				setErrorMessage(data.Error || "Failed to fetch movies")
 				setMovieList([])
 				return
@@ -65,18 +67,17 @@ const App = () => {
 
 					<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 				</header>
+
 				<section className="all-movies">
-					<h2>All Movies</h2>
+					<h2 className="mt-[40px]">All Movies</h2>
 					{isLoading ? (
-						<p className="text-white">Loading...</p>
+						<Spinner />
 					) : errorMessage ? (
 						<p className="text-red-500">{errorMessage}</p>
 					) : (
 						<ul>
 							{movieList.map((movie) => (
-								<p key={movie.id} className="text-white">
-									{movie.title}
-								</p>
+								<MovieCard key={movie.id} movie={movie} />
 							))}
 						</ul>
 					)}
